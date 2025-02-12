@@ -12,7 +12,7 @@
             background: linear-gradient(to right, #4facfe, #00f2fe); 
             color: white;
         }
-        input, button { 
+        input, button, select { 
             margin: 10px; 
             padding: 10px; 
             width: 80%; 
@@ -51,17 +51,15 @@
     <h1 id="formTitle">Borang</h1>
     <p id="billId">ID Bil: <span id="billNumber"></span></p>
 
-    <input type="text" id="customerName" placeholder="Nama Pelanggan">
-    <input type="text" id="orderDetails" placeholder="Detail Pesanan">
-    <div id="extraFields"></div>
+    <div id="dynamicForm"></div>
 
     <button onclick="addField()">Nota Tambahan</button>
     <button onclick="sendToWhatsApp()">Hantar ke WhatsApp</button>
 
     <p class="note"><strong>Panduan Penggunaan:</strong><br>
-        1. Masukkan nama pelanggan dan detail pesanan.<br>
+        1. Isikan maklumat berdasarkan jenis borang.<br>
         2. Klik "Nota Tambahan" jika ingin menambah maklumat lain.<br>
-        3. Tekan "Hantar ke WhatsApp" untuk menghantar tempahan melalui WhatsApp.
+        3. Tekan "Hantar ke WhatsApp" untuk menghantar borang.
     </p>
 
     <footer>
@@ -74,27 +72,74 @@
             return urlParams.get(param);
         }
 
-        document.getElementById("formTitle").innerText = getQueryParam("title") || "Borang";
-        document.getElementById("billNumber").innerText = Math.floor(100000 + Math.random() * 900000);
-
-        function addField() {
-            let extraFields = document.getElementById("extraFields");
+        function createInputField(id, placeholder) {
             let input = document.createElement("input");
             input.type = "text";
-            input.placeholder = "Nota Tambahan";
+            input.id = id;
+            input.placeholder = placeholder;
+            return input;
+        }
+
+        function loadForm() {
+            let formType = getQueryParam("title");
+            let formContainer = document.getElementById("dynamicForm");
+
+            document.getElementById("formTitle").innerText = formType || "Borang";
+            document.getElementById("billNumber").innerText = Math.floor(100000 + Math.random() * 900000);
+
+            let fields = [];
+
+            if (formType === "Register") {
+                fields = [
+                    createInputField("name", "Nama Penuh"),
+                    createInputField("email", "Email"),
+                    createInputField("phone", "No. Telefon"),
+                ];
+            } else if (formType === "Tempahan") {
+                fields = [
+                    createInputField("customerName", "Nama Pelanggan"),
+                    createInputField("orderDetails", "Detail Tempahan"),
+                ];
+            } else if (formType === "Travel Booking") {
+                fields = [
+                    createInputField("travelerName", "Nama Penumpang"),
+                    createInputField("destination", "Destinasi"),
+                    createInputField("travelDate", "Tarikh Perjalanan"),
+                ];
+            } else if (formType === "Food Order") {
+                fields = [
+                    createInputField("customerName", "Nama Pelanggan"),
+                    createInputField("foodItem", "Pesanan Makanan"),
+                    createInputField("quantity", "Kuantiti"),
+                ];
+            } else if (formType === "Register Kursus") {
+                fields = [
+                    createInputField("studentName", "Nama Pelajar"),
+                    createInputField("courseName", "Nama Kursus"),
+                    createInputField("email", "Email"),
+                ];
+            } else {
+                fields = [createInputField("generalInput", "Masukkan Maklumat")];
+            }
+
+            fields.forEach(field => formContainer.appendChild(field));
+        }
+
+        function addField() {
+            let extraFields = document.getElementById("dynamicForm");
+            let input = createInputField("", "Nota Tambahan");
             extraFields.appendChild(input);
         }
 
         function sendToWhatsApp() {
             let phone = getQueryParam("phone");
-            let customerName = document.getElementById("customerName").value.trim();
-            let orderDetails = document.getElementById("orderDetails").value.trim();
-            let extraInputs = document.querySelectorAll("#extraFields input");
-            let extraText = "";
+            let formType = getQueryParam("title");
+            let inputs = document.querySelectorAll("#dynamicForm input");
+            let message = `${formType.toUpperCase()}:\n`;
 
-            extraInputs.forEach(input => {
+            inputs.forEach(input => {
                 if (input.value.trim() !== "") {
-                    extraText += "\n- " + input.value.trim();
+                    message += `- ${input.placeholder}: ${input.value.trim()}\n`;
                 }
             });
 
@@ -103,15 +148,16 @@
                 return;
             }
 
-            if (customerName === "" || orderDetails === "") {
-                alert("Sila isi semua maklumat sebelum menghantar!");
+            if (message.trim() === `${formType.toUpperCase()}:\n`) {
+                alert("Sila isi sekurang-kurangnya satu maklumat sebelum menghantar!");
                 return;
             }
 
-            let message = `Tempahan Baru\nNama: ${customerName}\nPesanan: ${orderDetails}${extraText}\n\nID Bil: ${document.getElementById("billNumber").innerText}`;
             let waLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
             window.open(waLink, "_blank");
         }
+
+        document.addEventListener("DOMContentLoaded", loadForm);
     </script>
 </body>
 </html>
