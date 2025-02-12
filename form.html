@@ -1,99 +1,79 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Borang Pelanggan</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 50px;
-    }
-    input, textarea {
-      padding: 10px;
-      margin: 10px;
-      width: 300px;
-    }
-    button {
-      padding: 10px 20px;
-      background-color: #25D366;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    .additional-fields {
-      margin-top: 20px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Borang WhatsApp</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            padding: 20px; 
+            background: linear-gradient(to right, #4facfe, #00f2fe); 
+            color: white;
+        }
+        input, button { 
+            margin: 10px; 
+            padding: 8px; 
+            width: 80%; 
+            max-width: 400px; 
+            border: none;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #0288d1;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0277bd;
+        }
+        h1 {
+            font-size: 32px;
+            font-weight: bold;
+        }
+        footer { 
+            margin-top: 20px; 
+            font-size: 14px; 
+            color: white; 
+        }
+    </style>
 </head>
 <body>
-  <h1>Borang Pelanggan</h1>
-  <p>Sila isi maklumat anda:</p>
-  <input type="text" id="name" placeholder="Nama">
-  <input type="email" id="email" placeholder="Emel">
-  <textarea id="message" placeholder="Mesej"></textarea>
+    <h1>Borang WhatsApp</h1>
+    <h2>Borang Custom Anda</h2>
+    <input type="text" id="customerName" placeholder="Nama Pelanggan" required>
+    <input type="text" id="orderDetails" placeholder="Detail Pesanan" required>
+    <button onclick="sendToWhatsApp()">Hantar ke WhatsApp</button>
+    
+    <script>
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
 
-  <!-- Medan Tambahan -->
-  <div class="additional-fields" id="additionalFields"></div>
-
-  <button onclick="submitForm()">Hantar ke WhatsApp</button>
-
-  <script>
-    // Ambil nombor telefon dari URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const phoneNumber = urlParams.get('phone');
-
-    // Tambah medan tambahan jika ada dalam URL
-    const additionalQuestions = urlParams.get('questions');
-    if (additionalQuestions) {
-      const questions = decodeURIComponent(additionalQuestions).split('|');
-      const fieldsContainer = document.getElementById('additionalFields');
-      questions.forEach((question, index) => {
-        const label = document.createElement('label');
-        label.textContent = question;
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.id = `question-${index}`;
-        input.placeholder = `Jawapan untuk "${question}"`;
-        fieldsContainer.appendChild(label);
-        fieldsContainer.appendChild(input);
-      });
-    }
-
-    function submitForm() {
-      if (!phoneNumber) {
-        alert("Nombor telefon tidak sah!");
-        return;
-      }
-
-      // Ambil maklumat asas
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const message = document.getElementById('message').value.trim();
-
-      if (!name || !email || !message) {
-        alert("Sila lengkapkan semua medan!");
-        return;
-      }
-
-      // Ambil jawapan untuk soalan tambahan
-      let additionalAnswers = '';
-      if (additionalQuestions) {
-        const questions = decodeURIComponent(additionalQuestions).split('|');
-        questions.forEach((_, index) => {
-          const answer = document.getElementById(`question-${index}`).value.trim();
-          additionalAnswers += `%0A${questions[index]}: ${answer}`;
-        });
-      }
-
-      // Format pesanan untuk WhatsApp
-      const whatsappMessage = `Nama: ${name}%0AEmel: ${email}%0AMesej: ${message}${additionalAnswers}`;
-      const whatsappLink = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
-
-      // Buka WhatsApp
-      window.open(whatsappLink, '_blank');
-    }
-  </script>
+        function sendToWhatsApp() {
+            let phone = getQueryParam("phone");
+            let customerName = document.getElementById("customerName").value.trim();
+            let orderDetails = document.getElementById("orderDetails").value.trim();
+            
+            if (!phone) {
+                alert("Nombor telefon tidak dijumpai!");
+                return;
+            }
+            if (customerName === "" || orderDetails === "") {
+                alert("Sila isi semua maklumat!");
+                return;
+            }
+            
+            let message = `Nama: ${customerName}%0AOrder: ${orderDetails}`;
+            let url = `https://wa.me/${phone}?text=${message}`;
+            window.open(url, "_blank");
+        }
+    </script>
+    
+    <footer>
+        &copy; 2025 Mr.Syah | WhatsApp Form
+    </footer>
 </body>
 </html>
