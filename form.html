@@ -7,33 +7,41 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(to bottom, #33ccff, #0099ff);
+            background: linear-gradient(to bottom, #38b6ff, #0072ff);
             text-align: center;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
         }
         .container {
-            max-width: 600px;
-            margin: auto;
             background: white;
+            width: 90%;
+            max-width: 400px;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin: 50px auto;
         }
-        input, select, button {
+        select, input, textarea, button {
             width: 100%;
             padding: 10px;
-            margin: 5px 0;
+            margin-top: 10px;
             border-radius: 5px;
             border: 1px solid #ccc;
         }
         button {
-            background-color: #007bff;
+            background-color: #0072ff;
             color: white;
             border: none;
+            font-size: 16px;
             cursor: pointer;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #005ecb;
+        }
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: white;
         }
     </style>
 </head>
@@ -41,95 +49,100 @@
 
     <div class="container">
         <h2 id="formTitle">WhatsApp Custom Form</h2>
-        <label for="formType">Pilih Jenis Borang:</label>
-        <select id="formType" onchange="updateForm()">
+        <label>Pilih Jenis Borang:</label>
+        <select id="formType">
             <option value="">-- Pilih --</option>
-            <option value="register">Register</option>
-            <option value="tempahan">Tempahan</option>
-            <option value="travel_booking">Travel Booking</option>
-            <option value="food_order">Food Order</option>
-            <option value="register_kursus">Register Kursus</option>
-            <option value="lain">Lain-lain</option>
+            <option value="REGISTER">Pendaftaran</option>
+            <option value="TEMPAHAN">Tempahan</option>
+            <option value="TRAVEL BOOKING">Tempahan Perjalanan</option>
+            <option value="FOOD ORDER">Pesanan Makanan</option>
+            <option value="REGISTER KURSUS">Pendaftaran Kursus</option>
+            <option value="PERTANYAAN">Pertanyaan</option>
+            <option value="LAIN-LAIN">Lain-lain</option>
         </select>
+        
+        <div id="formFields"></div>
 
-        <form id="dynamicForm">
-            <div id="formFields"></div>
-            <button type="button" onclick="sendToWhatsApp()">Hantar ke WhatsApp</button>
-        </form>
-
-        <p>© 2025 Mr.Syah | WhatsApp Form</p>
+        <button onclick="sendToWhatsApp()">Hantar ke WhatsApp</button>
     </div>
+
+    <footer>
+        © 2025 Mr.Syah | WhatsApp Form
+    </footer>
 
     <script>
         let phoneNumber = "";
         let formTitle = "WhatsApp Custom Form";
         let billId = "";
 
+        // Fungsi untuk menjana Bill ID secara rawak
+        function generateBillId() {
+            return "BILL-" + Math.floor(100000 + Math.random() * 900000);
+        }
+
         // Ambil data dari URL
         function getParamsFromURL() {
             const urlParams = new URLSearchParams(window.location.search);
             phoneNumber = urlParams.get("phone") || "";
             formTitle = decodeURIComponent(urlParams.get("title") || "WhatsApp Custom Form");
-            billId = urlParams.get("billid") || "N/A";
+            billId = urlParams.get("billid") || generateBillId(); // Auto-generate jika tiada dalam URL
 
             document.getElementById("formTitle").innerText = formTitle;
         }
 
-        function updateForm() {
-            let formType = document.getElementById("formType").value;
+        // Tukar borang ikut pilihan pengguna
+        document.getElementById("formType").addEventListener("change", function () {
             let formFields = document.getElementById("formFields");
             formFields.innerHTML = "";
 
-            let fields = [];
+            let formType = this.value;
 
-            if (formType === "register") {
-                fields = [
-                    { id: "name", placeholder: "Nama Penuh" },
-                    { id: "email", placeholder: "Email" },
-                    { id: "phone_number", placeholder: "No. Telefon" }
-                ];
-            } else if (formType === "tempahan") {
-                fields = [
-                    { id: "product", placeholder: "Nama Produk" },
-                    { id: "quantity", placeholder: "Kuantiti" },
-                    { id: "price", placeholder: "Harga" }
-                ];
-            } else if (formType === "travel_booking") {
-                fields = [
-                    { id: "destination", placeholder: "Destinasi" },
-                    { id: "date", placeholder: "Tarikh Perjalanan" },
-                    { id: "passengers", placeholder: "Bilangan Penumpang" }
-                ];
-            } else if (formType === "food_order") {
-                fields = [
-                    { id: "food_item", placeholder: "Nama Makanan" },
-                    { id: "quantity", placeholder: "Kuantiti" },
-                    { id: "delivery_address", placeholder: "Alamat Penghantaran" }
-                ];
-            } else if (formType === "register_kursus") {
-                fields = [
-                    { id: "kursus_name", placeholder: "Nama Kursus" },
-                    { id: "participant_name", placeholder: "Nama Peserta" },
-                    { id: "contact", placeholder: "No. Telefon" }
-                ];
-            } else if (formType === "lain") {
-                fields = [
-                    { id: "custom_info", placeholder: "Maklumat Tambahan" }
-                ];
+            if (formType === "REGISTER") {
+                formFields.innerHTML = `
+                    <input type="text" placeholder="Nama Penuh" id="nama">
+                    <input type="email" placeholder="Email" id="email">
+                    <input type="tel" placeholder="No. Telefon" id="phone">
+                `;
+            } else if (formType === "TEMPAHAN") {
+                formFields.innerHTML = `
+                    <input type="text" placeholder="Nama Produk" id="produk">
+                    <input type="number" placeholder="Kuantiti" id="kuantiti">
+                    <input type="text" placeholder="Harga (RM)" id="harga">
+                `;
+            } else if (formType === "TRAVEL BOOKING") {
+                formFields.innerHTML = `
+                    <input type="text" placeholder="Destinasi" id="destinasi">
+                    <input type="date" placeholder="Tarikh Berlepas" id="tarikh">
+                    <input type="number" placeholder="Bilangan Penumpang" id="penumpang">
+                `;
+            } else if (formType === "FOOD ORDER") {
+                formFields.innerHTML = `
+                    <input type="text" placeholder="Nama Makanan" id="makanan">
+                    <input type="number" placeholder="Kuantiti" id="kuantiti">
+                    <input type="text" placeholder="Alamat Penghantaran" id="alamat">
+                `;
+            } else if (formType === "REGISTER KURSUS") {
+                formFields.innerHTML = `
+                    <input type="text" placeholder="Nama Kursus" id="kursus">
+                    <input type="text" placeholder="Nama Penuh" id="nama">
+                    <input type="email" placeholder="Email" id="email">
+                `;
+            } else if (formType === "PERTANYAAN") {
+                formFields.innerHTML = `
+                    <input type="text" placeholder="Nama Anda" id="nama">
+                    <input type="email" placeholder="Email" id="email">
+                    <textarea placeholder="Pertanyaan Anda" id="pertanyaan"></textarea>
+                `;
+            } else if (formType === "LAIN-LAIN") {
+                formFields.innerHTML = `
+                    <textarea placeholder="Maklumat lain-lain" id="lain"></textarea>
+                `;
             }
-
-            fields.forEach(field => {
-                let input = document.createElement("input");
-                input.type = "text";
-                input.id = field.id;
-                input.placeholder = field.placeholder;
-                formFields.appendChild(input);
-            });
-        }
+        });
 
         function sendToWhatsApp() {
             let formType = document.getElementById("formType").value;
-            let inputs = document.querySelectorAll("#formFields input");
+            let inputs = document.querySelectorAll("#formFields input, #formFields textarea");
             let message = `📌 *${formTitle}*\n🆔 Bill ID: ${billId}\n\n${formType.toUpperCase()}:\n`;
 
             if (!formType) {
