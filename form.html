@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Setup Borang WhatsApp</title>
+    <title>Borang WhatsApp</title>
     <style>
         body { 
             font-family: Arial, sans-serif; 
@@ -32,6 +32,14 @@
             font-size: 32px;
             font-weight: bold;
         }
+        .extra-field {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .extra-field input {
+            width: 70%;
+        }
         footer { 
             margin-top: 20px; 
             font-size: 14px; 
@@ -40,19 +48,56 @@
     </style>
 </head>
 <body>
-    <h1>Setup Borang WhatsApp</h1>
-    <h2>Masukkan No Telefon Anda</h2>
-    <input type="tel" id="phone" placeholder="Masukkan No Telefon Anda (60123456789)" required>
-    <button onclick="createForm()">Cipta Borang</button>
+    <h1>Borang WhatsApp</h1>
+    <h2>Borang Custom Anda</h2>
+    <input type="text" id="customerName" placeholder="Nama Pelanggan" required>
+    <input type="text" id="orderDetails" placeholder="Detail Pesanan" required>
+    
+    <div id="extraFields"></div>
+    <button onclick="addField()">Tambah Medan</button>
+    <button onclick="sendToWhatsApp()">Hantar ke WhatsApp</button>
     
     <script>
-        function createForm() {
-            let phone = document.getElementById("phone").value.trim();
-            if (phone === "") {
-                alert("Sila masukkan nombor telefon anda!");
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        function addField() {
+            let extraFields = document.getElementById("extraFields");
+            let div = document.createElement("div");
+            div.classList.add("extra-field");
+            let input = document.createElement("input");
+            input.type = "text";
+            input.placeholder = "Maklumat tambahan";
+            div.appendChild(input);
+            extraFields.appendChild(div);
+        }
+
+        function sendToWhatsApp() {
+            let phone = getQueryParam("phone");
+            let customerName = document.getElementById("customerName").value.trim();
+            let orderDetails = document.getElementById("orderDetails").value.trim();
+            
+            if (!phone) {
+                alert("Nombor telefon tidak dijumpai!");
                 return;
             }
-            window.location.href = `form.html?phone=${phone}`;
+            if (customerName === "" || orderDetails === "") {
+                alert("Sila isi semua maklumat!");
+                return;
+            }
+            
+            let message = `Nama: ${customerName}%0AOrder: ${orderDetails}`;
+            
+            document.querySelectorAll("#extraFields input").forEach(input => {
+                if (input.value.trim() !== "") {
+                    message += `%0A${input.value.trim()}`;
+                }
+            });
+            
+            let url = `https://wa.me/${phone}?text=${message}`;
+            window.open(url, "_blank");
         }
     </script>
     
