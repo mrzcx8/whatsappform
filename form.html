@@ -5,40 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WhatsApp Custom Form</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-            background: linear-gradient(to right, #4facfe, #00f2fe);
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            padding: 20px; 
+            background: linear-gradient(to right, #4facfe, #00f2fe); 
             color: white;
         }
-        input, button {
-            margin: 10px;
-            padding: 8px;
-            width: 80%;
-            max-width: 400px;
+        input, button { 
+            margin: 10px; 
+            padding: 10px; 
+            width: 80%; 
+            max-width: 400px; 
             border: none;
             border-radius: 5px;
         }
         button {
-            background-color: #0288d1;
+            background-color: #005cbf;
             color: white;
             cursor: pointer;
         }
         button:hover {
-            background-color: #0277bd;
+            background-color: #004494;
         }
-        .extra-field {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
+        h1 {
+            font-size: 32px;
+            font-weight: bold;
         }
-        .extra-field input {
-            width: 70%;
+        #extraFields {
+            margin-top: 10px;
         }
-        #billId {
-            font-size: 12px;
-            margin-bottom: 10px;
+        .note {
+            font-size: 14px;
+            color: #fff;
+            margin-top: 20px;
         }
         footer {
             margin-top: 20px;
@@ -48,66 +48,70 @@
     </style>
 </head>
 <body>
-    <h1 id="formTitle">Borang WhatsApp</h1>
+    <h1 id="formTitle">Borang</h1>
     <p id="billId">ID Bil: <span id="billNumber"></span></p>
-    
-    <input type="text" id="customerName" placeholder="Nama Pelanggan" required>
-    <input type="text" id="orderDetails" placeholder="Detail Pesanan" required>
-    
+
+    <input type="text" id="customerName" placeholder="Nama Pelanggan">
+    <input type="text" id="orderDetails" placeholder="Detail Pesanan">
     <div id="extraFields"></div>
-    <button onclick="addField()">Tambah Medan Tambahan</button>
+
+    <button onclick="addField()">Nota Tambahan</button>
     <button onclick="sendToWhatsApp()">Hantar ke WhatsApp</button>
-    
+
+    <p class="note"><strong>Panduan Penggunaan:</strong><br>
+        1. Masukkan nama pelanggan dan detail pesanan.<br>
+        2. Klik "Nota Tambahan" jika ingin menambah maklumat lain.<br>
+        3. Tekan "Hantar ke WhatsApp" untuk menghantar tempahan melalui WhatsApp.
+    </p>
+
+    <footer>
+        &copy; 2025 Mr.Syah | WhatsApp Form
+    </footer>
+
     <script>
-        function getQueryParam(name) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name);
+        function getQueryParam(param) {
+            let urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
         }
+
+        document.getElementById("formTitle").innerText = getQueryParam("title") || "Borang";
+        document.getElementById("billNumber").innerText = Math.floor(100000 + Math.random() * 900000);
 
         function addField() {
             let extraFields = document.getElementById("extraFields");
-            let div = document.createElement("div");
-            div.classList.add("extra-field");
             let input = document.createElement("input");
             input.type = "text";
-            input.placeholder = "Maklumat tambahan";
-            div.appendChild(input);
-            extraFields.appendChild(div);
+            input.placeholder = "Nota Tambahan";
+            extraFields.appendChild(input);
         }
 
         function sendToWhatsApp() {
             let phone = getQueryParam("phone");
-            let formTitle = getQueryParam("title");
             let customerName = document.getElementById("customerName").value.trim();
             let orderDetails = document.getElementById("orderDetails").value.trim();
-            
-            if (!phone) {
-                alert("Nombor telefon tidak dijumpai!");
-                return;
-            }
-            if (customerName === "" || orderDetails === "") {
-                alert("Sila isi semua maklumat!");
-                return;
-            }
-            
-            let message = `Nama: ${customerName}%0AOrder: ${orderDetails}`;
-            
-            document.querySelectorAll("#extraFields input").forEach(input => {
+            let extraInputs = document.querySelectorAll("#extraFields input");
+            let extraText = "";
+
+            extraInputs.forEach(input => {
                 if (input.value.trim() !== "") {
-                    message += `%0A${input.value.trim()}`;
+                    extraText += "\n- " + input.value.trim();
                 }
             });
-            
-            let url = `https://wa.me/${phone}?text=${message}`;
-            window.open(url, "_blank");
-        }
 
-        document.getElementById("formTitle").textContent = getQueryParam("title") || "Borang WhatsApp";
-        document.getElementById("billNumber").textContent = Math.floor(Math.random() * 1000000);
+            if (!phone || phone === "null") {
+                alert("Nombor WhatsApp tidak sah!");
+                return;
+            }
+
+            if (customerName === "" || orderDetails === "") {
+                alert("Sila isi semua maklumat sebelum menghantar!");
+                return;
+            }
+
+            let message = `Tempahan Baru\nNama: ${customerName}\nPesanan: ${orderDetails}${extraText}\n\nID Bil: ${document.getElementById("billNumber").innerText}`;
+            let waLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+            window.open(waLink, "_blank");
+        }
     </script>
-    
-    <footer>
-        &copy; 2025 Mr.Syah | WhatsApp Form
-    </footer>
 </body>
 </html>
