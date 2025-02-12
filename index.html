@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Masukkan Nombor Telefon</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 50px;
+    }
+    input {
+      padding: 10px;
+      margin: 10px;
+      width: 200px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #25D366;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Masukkan Nombor Telefon Anda</h1>
+  <p>Ini akan digunakan untuk menerima borang pelanggan.</p>
+  <input type="text" id="phoneNumber" placeholder="Contoh: 60123456789">
+  <button onclick="generateForm()">Cipta Borang</button>
+
+  <script>
+    function generateForm() {
+      const phoneNumber = document.getElementById('phoneNumber').value.trim();
+      if (!phoneNumber) {
+        alert("Sila masukkan nombor telefon!");
+        return;
+      }
+      // Redirect ke halaman borang dengan nombor telefon sebagai parameter
+      window.location.href = `form.html?phone=${encodeURIComponent(phoneNumber)}`;
+    }
+  </script>
+</body>
+</html>
