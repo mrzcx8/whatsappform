@@ -49,10 +49,18 @@
 </head>
 <body>
     <h1>Borang WhatsApp</h1>
-    <h2>Borang Custom Anda</h2>
+    <h2 id="formTitle">Borang Custom Anda</h2>
     <input type="text" id="customerName" placeholder="Nama Pelanggan" required>
     <input type="text" id="orderDetails" placeholder="Detail Pesanan" required>
     
+    <h3>Maklumat Tambahan (Opsyenal)</h3>
+    <input type="email" id="email" placeholder="Email (Opsyenal)">
+    <input type="tel" id="phoneNumber" placeholder="No Telefon (Opsyenal)">
+    <input type="text" id="address" placeholder="Alamat (Opsyenal)">
+
+    <h3>ID Bil</h3>
+    <input type="text" id="billId" readonly>
+
     <div id="extraFields"></div>
     <button onclick="addField()">Tambah Medan</button>
     <button onclick="sendToWhatsApp()">Hantar ke WhatsApp</button>
@@ -61,6 +69,10 @@
         function getQueryParam(name) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(name);
+        }
+
+        function generateBillId() {
+            return 'BIL' + Math.floor(100000 + Math.random() * 900000);
         }
 
         function addField() {
@@ -78,6 +90,10 @@
             let phone = getQueryParam("phone");
             let customerName = document.getElementById("customerName").value.trim();
             let orderDetails = document.getElementById("orderDetails").value.trim();
+            let billId = document.getElementById("billId").value.trim();
+            let email = document.getElementById("email").value.trim();
+            let phoneNumber = document.getElementById("phoneNumber").value.trim();
+            let address = document.getElementById("address").value.trim();
             
             if (!phone) {
                 alert("Nombor telefon tidak dijumpai!");
@@ -88,8 +104,12 @@
                 return;
             }
             
-            let message = `Nama: ${customerName}%0AOrder: ${orderDetails}`;
+            let message = `Nama: ${customerName}%0AOrder: ${orderDetails}%0AID Bil: ${billId}`;
             
+            if (email) message += `%0AEmail: ${email}`;
+            if (phoneNumber) message += `%0ANo Telefon: ${phoneNumber}`;
+            if (address) message += `%0AAlamat: ${address}`;
+
             document.querySelectorAll("#extraFields input").forEach(input => {
                 if (input.value.trim() !== "") {
                     message += `%0A${input.value.trim()}`;
@@ -99,6 +119,15 @@
             let url = `https://wa.me/${phone}?text=${message}`;
             window.open(url, "_blank");
         }
+
+        window.onload = function() {
+            let formTitle = getQueryParam("title");
+            if (formTitle) {
+                document.getElementById("formTitle").innerText = formTitle;
+                document.getElementById("orderDetails").placeholder = formTitle;
+            }
+            document.getElementById("billId").value = generateBillId();
+        };
     </script>
     
     <footer>
