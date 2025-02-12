@@ -1,24 +1,96 @@
-function generateLink() {
-    let phone = document.getElementById("phoneNumber").value.trim();
-    let title = encodeURIComponent(document.getElementById("formTitle").value.trim());
-    
-    if (phone === "" || title === "") {
-        alert("Sila isi semua maklumat!");
-        return;
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Form Generator</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            padding: 20px; 
+            background: linear-gradient(to right, #4facfe, #00f2fe); 
+            color: white;
+        }
+        input, button { 
+            margin: 10px; 
+            padding: 10px; 
+            width: 80%; 
+            max-width: 400px; 
+            border: none;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #005cbf;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #004494;
+        }
+        h1 {
+            font-size: 32px;
+            font-weight: bold;
+        }
+        #linkSection {
+            margin-top: 20px;
+            display: none;
+        }
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: white;
+        }
+        .note {
+            font-size: 14px;
+            margin-top: 15px;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>WhatsApp Form Generator</h1>
+    <p>Masukkan nombor telefon dan tajuk borang anda.</p>
+    <input type="text" id="phoneNumber" placeholder="Nombor Telefon (60123456789)" required>
+    <input type="text" id="formTitle" placeholder="Tajuk Borang (Contoh: Tempahan, Kursus)" required>
+    <button onclick="generateLink()">Cipta Borang</button>
 
-    
-    let baseUrl = "https://mrzcx8.github.io/whatsappform/";
-    let fullLink = `${baseUrl}form.html?phone=${phone}&title=${title}`;
-    
-    document.getElementById("generatedLink").value = fullLink;
-    document.getElementById("linkSection").style.display = "block";
-}
+    <div id="linkSection">
+        <p>Pautan Borang Anda:</p>
+        <input type="text" id="generatedLink" readonly>
+        <button onclick="copyLink()">Salin Pautan</button>
+    </div>
 
-function copyLink() {
-    let copyText = document.getElementById("generatedLink");
-    copyText.select();
-    copyText.setSelectionRange(0, 99999); 
-    navigator.clipboard.writeText(copyText.value);
-    alert("Pautan disalin: " + copyText.value);
-}
+    <p class="note">Nota: Masukkan nombor telefon tanpa simbol "+" dan pastikan nombor betul sebelum berkongsi borang.</p>
+
+    <footer>
+        &copy; 2025 Mr.Syah | WhatsApp Form
+    </footer>
+
+    <script>
+        function generateLink() {
+            let phone = document.getElementById("phoneNumber").value.trim();
+            let title = encodeURIComponent(document.getElementById("formTitle").value.trim());
+
+            if (phone === "" || title === "") {
+                alert("Sila isi semua maklumat!");
+                return;
+            }
+
+            let baseUrl = "https://mrzcx8.github.io/whatsappform/form.html";
+            let fullLink = `${baseUrl}?phone=${phone}&title=${title}`;
+
+            document.getElementById("generatedLink").value = fullLink;
+            document.getElementById("linkSection").style.display = "block";
+        }
+
+        function copyLink() {
+            let copyText = document.getElementById("generatedLink");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value);
+            alert("Pautan disalin: " + copyText.value);
+        }
+    </script>
+</body>
+</html>
