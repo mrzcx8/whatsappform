@@ -13,7 +13,7 @@
     input, textarea {
       padding: 10px;
       margin: 10px;
-      width: 200px;
+      width: 300px;
     }
     button {
       padding: 10px 20px;
@@ -21,6 +21,9 @@
       color: white;
       border: none;
       cursor: pointer;
+    }
+    .additional-fields {
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -30,20 +33,41 @@
   <input type="text" id="name" placeholder="Nama">
   <input type="email" id="email" placeholder="Emel">
   <textarea id="message" placeholder="Mesej"></textarea>
+
+  <!-- Medan Tambahan -->
+  <div class="additional-fields" id="additionalFields"></div>
+
   <button onclick="submitForm()">Hantar ke WhatsApp</button>
 
   <script>
-    function submitForm() {
-      // Ambil nombor telefon dari URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const phoneNumber = urlParams.get('phone');
+    // Ambil nombor telefon dari URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const phoneNumber = urlParams.get('phone');
 
+    // Tambah medan tambahan jika ada dalam URL
+    const additionalQuestions = urlParams.get('questions');
+    if (additionalQuestions) {
+      const questions = decodeURIComponent(additionalQuestions).split('|');
+      const fieldsContainer = document.getElementById('additionalFields');
+      questions.forEach((question, index) => {
+        const label = document.createElement('label');
+        label.textContent = question;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.id = `question-${index}`;
+        input.placeholder = `Jawapan untuk "${question}"`;
+        fieldsContainer.appendChild(label);
+        fieldsContainer.appendChild(input);
+      });
+    }
+
+    function submitForm() {
       if (!phoneNumber) {
         alert("Nombor telefon tidak sah!");
         return;
       }
 
-      // Ambil maklumat borang
+      // Ambil maklumat asas
       const name = document.getElementById('name').value.trim();
       const email = document.getElementById('email').value.trim();
       const message = document.getElementById('message').value.trim();
@@ -53,8 +77,18 @@
         return;
       }
 
+      // Ambil jawapan untuk soalan tambahan
+      let additionalAnswers = '';
+      if (additionalQuestions) {
+        const questions = decodeURIComponent(additionalQuestions).split('|');
+        questions.forEach((_, index) => {
+          const answer = document.getElementById(`question-${index}`).value.trim();
+          additionalAnswers += `%0A${questions[index]}: ${answer}`;
+        });
+      }
+
       // Format pesanan untuk WhatsApp
-      const whatsappMessage = `Nama: ${name}%0AEmel: ${email}%0AMesej: ${message}`;
+      const whatsappMessage = `Nama: ${name}%0AEmel: ${email}%0AMesej: ${message}${additionalAnswers}`;
       const whatsappLink = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
 
       // Buka WhatsApp
