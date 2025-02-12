@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Borang WhatsApp</title>
+    <title>Setup Borang WhatsApp</title>
     <style>
         body { 
             font-family: Arial, sans-serif; 
@@ -40,35 +40,19 @@
     </style>
 </head>
 <body>
-    <h1>Borang WhatsApp</h1>
-    <h2>Borang Custom Anda</h2>
-    <input type="text" id="customerName" placeholder="Nama Pelanggan" required>
-    <input type="text" id="orderDetails" placeholder="Detail Pesanan" required>
-    <button onclick="sendToWhatsApp()">Hantar ke WhatsApp</button>
+    <h1>Setup Borang WhatsApp</h1>
+    <h2>Masukkan No Telefon Anda</h2>
+    <input type="tel" id="phone" placeholder="Masukkan No Telefon Anda (60123456789)" required>
+    <button onclick="createForm()">Cipta Borang</button>
     
     <script>
-        function getQueryParam(name) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name);
-        }
-
-        function sendToWhatsApp() {
-            let phone = getQueryParam("phone");
-            let customerName = document.getElementById("customerName").value.trim();
-            let orderDetails = document.getElementById("orderDetails").value.trim();
-            
-            if (!phone) {
-                alert("Nombor telefon tidak dijumpai!");
+        function createForm() {
+            let phone = document.getElementById("phone").value.trim();
+            if (phone === "") {
+                alert("Sila masukkan nombor telefon anda!");
                 return;
             }
-            if (customerName === "" || orderDetails === "") {
-                alert("Sila isi semua maklumat!");
-                return;
-            }
-            
-            let message = `Nama: ${customerName}%0AOrder: ${orderDetails}`;
-            let url = `https://wa.me/${phone}?text=${message}`;
-            window.open(url, "_blank");
+            window.location.href = `form.html?phone=${phone}`;
         }
     </script>
     
