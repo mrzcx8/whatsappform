@@ -1,157 +1,135 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WhatsApp Custom Form</title>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            text-align: center; 
-            padding: 20px; 
-            background: linear-gradient(to right, #4facfe, #00f2fe); 
-            color: white;
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #33ccff, #0099ff);
+            text-align: center;
+            padding: 20px;
         }
-        input, button, select { 
-            margin: 10px; 
-            padding: 10px; 
-            width: 80%; 
-            max-width: 400px; 
-            border: none;
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
             border-radius: 5px;
+            border: 1px solid #ccc;
         }
         button {
-            background-color: #005cbf;
+            background-color: #007bff;
             color: white;
+            border: none;
             cursor: pointer;
         }
         button:hover {
-            background-color: #004494;
+            background-color: #0056b3;
         }
-        h1 {
-            font-size: 32px;
-            font-weight: bold;
-        }
-        #extraFields {
-            margin-top: 10px;
-        }
-        .note {
-            font-size: 14px;
-            color: #fff;
-            margin-top: 20px;
-        }
-        footer {
-            margin-top: 20px;
-            font-size: 14px;
-            color: white;
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <h1 id="formTitle">Borang</h1>
-    <p>ID Bil: <span id="billNumber"></span></p>
 
-    <select id="formType" onchange="loadForm()">
-        <option value="">Pilih Jenis Borang</option>
-        <option value="Register">Register</option>
-        <option value="Tempahan">Tempahan</option>
-        <option value="Travel Booking">Travel Booking</option>
-        <option value="Food Order">Food Order</option>
-        <option value="Register Kursus">Register Kursus</option>
-        <option value="Lain-lain">Lain-lain</option>
-    </select>
+    <div class="container">
+        <h2>WhatsApp Custom Form</h2>
+        <label for="formType">Pilih Jenis Borang:</label>
+        <select id="formType" onchange="updateForm()">
+            <option value="">-- Pilih --</option>
+            <option value="register">Register</option>
+            <option value="tempahan">Tempahan</option>
+            <option value="travel_booking">Travel Booking</option>
+            <option value="food_order">Food Order</option>
+            <option value="register_kursus">Register Kursus</option>
+            <option value="lain">Lain-lain</option>
+        </select>
 
-    <div id="dynamicForm"></div>
+        <form id="dynamicForm">
+            <input type="text" id="phone" placeholder="Nombor WhatsApp Penerima (Cth: 60123456789)" required>
+            <div id="formFields"></div>
+            <button type="button" onclick="sendToWhatsApp()">Hantar ke WhatsApp</button>
+        </form>
 
-    <button onclick="addField()">Nota Tambahan</button>
-    <button onclick="sendToWhatsApp()">Hantar ke WhatsApp</button>
-
-    <p class="note"><strong>Panduan Penggunaan:</strong><br>
-        1. Pilih jenis borang dari dropdown.<br>
-        2. Isikan maklumat berdasarkan borang yang dipilih.<br>
-        3. Klik "Nota Tambahan" jika ingin menambah maklumat lain.<br>
-        4. Tekan "Hantar ke WhatsApp" untuk menghantar borang.
-    </p>
-
-    <footer>
-        &copy; 2025 Mr.Syah | WhatsApp Form
-    </footer>
+        <p>© 2025 Mr.Syah | WhatsApp Form</p>
+    </div>
 
     <script>
-        function createInputField(id, placeholder) {
-            let input = document.createElement("input");
-            input.type = "text";
-            input.id = id;
-            input.placeholder = placeholder;
-            return input;
-        }
-
-        function loadForm() {
+        function updateForm() {
             let formType = document.getElementById("formType").value;
-            let formContainer = document.getElementById("dynamicForm");
-            formContainer.innerHTML = ""; // Kosongkan medan sebelumnya
-
-            document.getElementById("formTitle").innerText = formType || "Borang";
-            document.getElementById("billNumber").innerText = Math.floor(100000 + Math.random() * 900000);
+            let formFields = document.getElementById("formFields");
+            formFields.innerHTML = "";
 
             let fields = [];
 
-            if (formType === "Register") {
+            if (formType === "register") {
                 fields = [
-                    createInputField("name", "Nama Penuh"),
-                    createInputField("email", "Email"),
-                    createInputField("phone", "No. Telefon")
+                    { id: "name", placeholder: "Nama Penuh" },
+                    { id: "email", placeholder: "Email" },
+                    { id: "phone_number", placeholder: "No. Telefon" }
                 ];
-            } else if (formType === "Tempahan") {
+            } else if (formType === "tempahan") {
                 fields = [
-                    createInputField("customerName", "Nama Pelanggan"),
-                    createInputField("orderDetails", "Butiran Tempahan"),
-                    createInputField("date", "Tarikh Tempahan"),
-                    createInputField("quantity", "Jumlah")
+                    { id: "product", placeholder: "Nama Produk" },
+                    { id: "quantity", placeholder: "Kuantiti" },
+                    { id: "price", placeholder: "Harga" }
                 ];
-            } else if (formType === "Travel Booking") {
+            } else if (formType === "travel_booking") {
                 fields = [
-                    createInputField("travelerName", "Nama Penumpang"),
-                    createInputField("destination", "Destinasi"),
-                    createInputField("departureDate", "Tarikh Pergi"),
-                    createInputField("returnDate", "Tarikh Balik"),
-                    createInputField("numberOfPersons", "Bilangan Penumpang")
+                    { id: "destination", placeholder: "Destinasi" },
+                    { id: "date", placeholder: "Tarikh Perjalanan" },
+                    { id: "passengers", placeholder: "Bilangan Penumpang" }
                 ];
-            } else if (formType === "Food Order") {
+            } else if (formType === "food_order") {
                 fields = [
-                    createInputField("customerName", "Nama Pelanggan"),
-                    createInputField("foodItem", "Nama Makanan"),
-                    createInputField("quantity", "Kuantiti"),
-                    createInputField("specialRequest", "Permintaan Khas (Opsyenal)")
+                    { id: "food_item", placeholder: "Nama Makanan" },
+                    { id: "quantity", placeholder: "Kuantiti" },
+                    { id: "delivery_address", placeholder: "Alamat Penghantaran" }
                 ];
-            } else if (formType === "Register Kursus") {
+            } else if (formType === "register_kursus") {
                 fields = [
-                    createInputField("studentName", "Nama Pelajar"),
-                    createInputField("courseName", "Nama Kursus"),
-                    createInputField("email", "Email"),
-                    createInputField("phone", "No. Telefon")
+                    { id: "kursus_name", placeholder: "Nama Kursus" },
+                    { id: "participant_name", placeholder: "Nama Peserta" },
+                    { id: "contact", placeholder: "No. Telefon" }
                 ];
-            } else if (formType === "Lain-lain") {
-                fields = [createInputField("generalInput", "Masukkan Maklumat")];
+            } else if (formType === "lain") {
+                fields = [
+                    { id: "custom_info", placeholder: "Maklumat Tambahan" }
+                ];
             }
 
-            fields.forEach(field => formContainer.appendChild(field));
-        }
-
-        function addField() {
-            let extraFields = document.getElementById("dynamicForm");
-            let input = createInputField("", "Nota Tambahan");
-            extraFields.appendChild(input);
+            fields.forEach(field => {
+                let input = document.createElement("input");
+                input.type = "text";
+                input.id = field.id;
+                input.placeholder = field.placeholder;
+                formFields.appendChild(input);
+            });
         }
 
         function sendToWhatsApp() {
-            let phone = "601112345678"; // Tukar ke nombor sebenar jika mahu
             let formType = document.getElementById("formType").value;
-            let inputs = document.querySelectorAll("#dynamicForm input");
+            let phoneInput = document.getElementById("phone").value.trim(); // Ambil nombor telefon dari input
+            let inputs = document.querySelectorAll("#formFields input");
             let message = `${formType.toUpperCase()}:\n`;
 
             if (!formType) {
                 alert("Sila pilih jenis borang dahulu!");
+                return;
+            }
+
+            if (!phoneInput) {
+                alert("Sila masukkan nombor WhatsApp penerima!");
                 return;
             }
 
@@ -161,18 +139,10 @@
                 }
             });
 
-            if (message.trim() === `${formType.toUpperCase()}:\n`) {
-                alert("Sila isi sekurang-kurangnya satu maklumat sebelum menghantar!");
-                return;
-            }
-
-            let waLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+            let waLink = `https://api.whatsapp.com/send?phone=${phoneInput}&text=${encodeURIComponent(message)}`;
             window.open(waLink, "_blank");
         }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("billNumber").innerText = Math.floor(100000 + Math.random() * 900000);
-        });
     </script>
+
 </body>
 </html>
