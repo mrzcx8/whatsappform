@@ -40,7 +40,7 @@
 <body>
 
     <div class="container">
-        <h2>WhatsApp Custom Form</h2>
+        <h2 id="formTitle">WhatsApp Custom Form</h2>
         <label for="formType">Pilih Jenis Borang:</label>
         <select id="formType" onchange="updateForm()">
             <option value="">-- Pilih --</option>
@@ -62,11 +62,17 @@
 
     <script>
         let phoneNumber = "";
+        let formTitle = "WhatsApp Custom Form";
+        let billId = "";
 
-        // Ambil nombor telefon dari URL
-        function getPhoneFromURL() {
+        // Ambil data dari URL
+        function getParamsFromURL() {
             const urlParams = new URLSearchParams(window.location.search);
             phoneNumber = urlParams.get("phone") || "";
+            formTitle = decodeURIComponent(urlParams.get("title") || "WhatsApp Custom Form");
+            billId = urlParams.get("billid") || "N/A";
+
+            document.getElementById("formTitle").innerText = formTitle;
         }
 
         function updateForm() {
@@ -124,7 +130,7 @@
         function sendToWhatsApp() {
             let formType = document.getElementById("formType").value;
             let inputs = document.querySelectorAll("#formFields input");
-            let message = `${formType.toUpperCase()}:\n`;
+            let message = `📌 *${formTitle}*\n🆔 Bill ID: ${billId}\n\n${formType.toUpperCase()}:\n`;
 
             if (!formType) {
                 alert("Sila pilih jenis borang dahulu!");
@@ -146,8 +152,8 @@
             window.open(waLink, "_blank");
         }
 
-        // Panggil fungsi untuk ambil nombor telefon dari URL
-        getPhoneFromURL();
+        // Panggil fungsi untuk ambil data dari URL
+        getParamsFromURL();
     </script>
 
 </body>
