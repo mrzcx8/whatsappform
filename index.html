@@ -1,68 +1,63 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cipta Borang</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 50px;
-    }
-    input, textarea {
-      padding: 10px;
-      margin: 10px;
-      width: 300px;
-    }
-    button {
-      padding: 10px 20px;
-      background-color: #25D366;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    .link-box {
-      margin-top: 20px;
-      font-size: 14px;
-      color: #333;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Borang WhatsApp</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            padding: 20px; 
+            background: linear-gradient(to right, #4facfe, #00f2fe); 
+            color: white;
+        }
+        input, button { 
+            margin: 10px; 
+            padding: 8px; 
+            width: 80%; 
+            max-width: 400px; 
+            border: none;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #0288d1;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0277bd;
+        }
+        h1 {
+            font-size: 32px;
+            font-weight: bold;
+        }
+        footer { 
+            margin-top: 20px; 
+            font-size: 14px; 
+            color: white; 
+        }
+    </style>
 </head>
 <body>
-  <h1>Cipta Borang WhatsApp</h1>
-  <p>Masukkan nombor telefon anda untuk menerima borang pelanggan:</p>
-  <input type="text" id="phoneNumber" placeholder="Contoh: 60123456789">
-  <button onclick="generateForm()">Cipta Borang</button>
-
-  <div class="link-box" id="linkBox" style="display: none;">
-    <p>Borang telah dicipta! Salin pautan ini dan hantar kepada pelanggan:</p>
-    <textarea id="formLink" rows="3" readonly></textarea>
-    <button onclick="copyLink()">Salin Pautan</button>
-  </div>
-
-  <script>
-    function generateForm() {
-      const phoneNumber = document.getElementById('phoneNumber').value.trim();
-      if (!phoneNumber) {
-        alert("Sila masukkan nombor telefon!");
-        return;
-      }
-
-      // Buat pautan borang dengan nombor telefon sebagai parameter
-      const formLink = `${window.location.origin}/form.html?phone=${encodeURIComponent(phoneNumber)}`;
-
-      // Paparkan pautan dalam kotak teks
-      document.getElementById('formLink').value = formLink;
-      document.getElementById('linkBox').style.display = 'block';
-    }
-
-    function copyLink() {
-      const formLink = document.getElementById('formLink');
-      formLink.select();
-      document.execCommand('copy');
-      alert("Pautan telah disalin ke clipboard!");
-    }
-  </script>
+    <h1>Setup Borang WhatsApp</h1>
+    <h2>Masukkan No Telefon Anda</h2>
+    <input type="tel" id="phone" placeholder="Masukkan No Telefon Anda (60123456789)" required>
+    <button onclick="createForm()">Cipta Borang</button>
+    
+    <script>
+        function createForm() {
+            let phone = document.getElementById("phone").value.trim();
+            if (phone === "") {
+                alert("Sila masukkan nombor telefon anda!");
+                return;
+            }
+            window.location.href = `form.html?phone=${phone}`;
+        }
+    </script>
+    
+    <footer>
+        &copy; 2025 Mr.Syah | WhatsApp Form
+    </footer>
 </body>
 </html>
