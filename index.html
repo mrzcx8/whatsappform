@@ -41,18 +41,20 @@
 </head>
 <body>
     <h1>Setup Borang WhatsApp</h1>
-    <h2>Masukkan No Telefon Anda</h2>
+    <h2>Masukkan Maklumat Borang</h2>
     <input type="tel" id="phone" placeholder="Masukkan No Telefon Anda (60123456789)" required>
+    <input type="text" id="formTitle" placeholder="Tajuk Borang (Contoh: Tempahan Makanan)" required>
     <button onclick="createForm()">Cipta Borang</button>
     
     <script>
         function createForm() {
             let phone = document.getElementById("phone").value.trim();
-            if (phone === "") {
-                alert("Sila masukkan nombor telefon anda!");
+            let formTitle = document.getElementById("formTitle").value.trim();
+            if (phone === "" || formTitle === "") {
+                alert("Sila masukkan semua maklumat!");
                 return;
             }
-            window.location.href = `form.html?phone=${phone}`;
+            window.location.href = `form.html?phone=${phone}&title=${encodeURIComponent(formTitle)}`;
         }
     </script>
     
